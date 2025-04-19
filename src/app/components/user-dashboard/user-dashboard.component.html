@@ -1,0 +1,54 @@
+<div class="dashboard-container">
+    <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+        <button class="toggle-btn" (click)="toggleSidebar()">
+            {{ sidebarCollapsed ? '☰' : '✖' }}
+        </button>
+        <ng-container *ngIf="!sidebarCollapsed">
+            <h3>User Menu</h3>
+            <p>Welcome, {{ currentUser }}</p>
+            <button routerLink="/booking" class="button">Go to Booking</button>
+        </ng-container>
+    </aside>
+
+    <div class="content column-layout">
+        <div class="slot-section">
+            <h3>🚗 Car Slots</h3>
+            <label>
+                Slots per page:
+                <input type="number" [(ngModel)]="carPerPage" min="1" />
+            </label>
+            <div class="slot-grid">
+                <!-- Car section slot -->
+                <div *ngFor="let slot of paginatedCarSlots(); let i = index" class="slot" [class.booked]="slot.isBooked"
+                    (click)="book(slot)">
+                    <div *ngIf="!slot.isBooked">{{ (carPage - 1) * carPerPage + i + 1 }}</div>
+                    <div *ngIf="slot.isBooked">🚗</div>
+                </div>
+
+            </div>
+            <div class="pagination">
+                <button *ngFor="let page of carPages()" [class.active]="carPage === page" (click)="carPage = page">{{
+                    page }}</button>
+            </div>
+        </div>
+
+        <div class="slot-section">
+            <h3>🛵 Bike Slots</h3>
+            <label>
+                Slots per page:
+                <input type="number" [(ngModel)]="bikePerPage" min="1" />
+            </label>
+            <div class="slot-grid">
+                <div *ngFor="let slot of paginatedBikeSlots(); let i = index" class="slot"
+                    [class.booked]="slot.isBooked" (click)="book(slot)">
+                    <div *ngIf="!slot.isBooked">{{ (bikePage - 1) * bikePerPage + i + 1 }}</div>
+                    <div *ngIf="slot.isBooked">🛵</div>
+                </div>
+            </div>
+            <div class="pagination">
+                <button *ngFor="let page of bikePages()" [class.active]="bikePage === page" (click)="bikePage = page">{{
+                    page }}</button>
+            </div>
+        </div>
+    </div>
+</div>

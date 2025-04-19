@@ -1,0 +1,19 @@
+.slot-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .slot {
+    padding: 10px 14px;
+    background-color: #d5f0ff;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    min-width: 70px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .slot.booked {
+    background-color: #ffcccc;
+    border-color: red;
+  }

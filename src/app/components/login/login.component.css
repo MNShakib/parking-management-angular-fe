@@ -1,0 +1,8 @@
+.container label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  input, select {
+    padding: 6px;
+    margin-left: 10px;
+  }

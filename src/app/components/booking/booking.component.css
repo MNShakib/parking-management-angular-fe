@@ -1,0 +1,31 @@
+.container {
+    padding: 20px;
+  }
+  
+  .booking-card {
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  }
+  
+  .booking-card h3 {
+    margin-top: 0;
+  }
+  
+  .booking-card button {
+    margin-top: 10px;
+    background: #27ae60;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .booking-card button:hover {
+    background: #219150;
+  }
+  

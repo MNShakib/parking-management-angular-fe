@@ -1,0 +1,13 @@
+<div class="container">
+    <h1>Register</h1>
+    <label>
+      Username:
+      <input type="text" [(ngModel)]="username" />
+    </label>
+    <label>
+      Password:
+      <input type="password" [(ngModel)]="password" />
+    </label>
+    <button class="button" (click)="register()">Register</button>
+    <p>Already have an account? <a routerLink="/login">Login</a></p>
+  </div>

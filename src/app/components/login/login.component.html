@@ -1,0 +1,20 @@
+<div class="container">
+    <h1>Login</h1>
+    <label>
+      Username:
+      <input type="text" [(ngModel)]="username" />
+    </label>
+    <label>
+      Password:
+      <input type="password" [(ngModel)]="password" />
+    </label>
+    <label>
+      Role:
+      <select [(ngModel)]="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </label>
+    <button class="button" (click)="login()">Login</button>
+    <p>Don't have an account? <a routerLink="/register">Register</a></p>
+  </div>

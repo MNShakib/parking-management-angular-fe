@@ -1,0 +1,16 @@
+<nav class="navbar">
+    <div class="nav-left">
+      <a class="logo" routerLink="/">🅿️🏠 ParkingApp</a>
+  
+      <a *ngIf="isLoggedIn && isAdmin" routerLink="/admin">Admin Panel</a>
+      <a *ngIf="isLoggedIn && !isAdmin" routerLink="/user">Dashboard</a>
+      <!-- <a *ngIf="isAdmin" routerLink="/payments">Payments</a> -->
+    </div>
+  
+    <div class="nav-right">
+      <span *ngIf="isLoggedIn">Hello, {{ username }}</span>
+      <a *ngIf="!isLoggedIn" routerLink="/login">Login</a>
+      <a *ngIf="isLoggedIn" (click)="logout()">Logout</a>
+    </div>
+  </nav>
+  

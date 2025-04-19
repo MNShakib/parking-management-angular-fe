@@ -1,0 +1,33 @@
+<div class="container">
+    <h1>Admin Dashboard</h1>
+  
+    <h2>Set Hourly Price</h2>
+    <label>Car Price: <input type="number" [(ngModel)]="carRate" /></label>
+    <label>Bike Price: <input type="number" [(ngModel)]="bikeRate" /></label>
+    <button class="button" (click)="updatePrices()">Save Prices</button>
+  
+    <h2>Manage Slots</h2>
+    <label>Car Slots: <input type="number" [(ngModel)]="carSlotCount" /></label>
+    <label>Bike Slots: <input type="number" [(ngModel)]="bikeSlotCount" /></label>
+    <button class="button" (click)="updateSlotCounts()">Update Slots</button>
+  
+    <h3>Car Slots</h3>
+    <div class="slot-row">
+      <div *ngFor="let slot of carSlots" 
+           class="slot" 
+           [class.booked]="slot.isBooked" 
+           (click)="viewBookingDetails(slot)">
+        {{ slot.id }}
+      </div>
+    </div>
+  
+    <h3>Bike Slots</h3>
+    <div class="slot-row">
+      <div *ngFor="let slot of bikeSlots" 
+           class="slot" 
+           [class.booked]="slot.isBooked" 
+           (click)="viewBookingDetails(slot)">
+        {{ slot.id }}
+      </div>
+    </div>
+  </div>

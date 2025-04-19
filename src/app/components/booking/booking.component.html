@@ -1,0 +1,17 @@
+<div class="container">
+    <h1>All Active Bookings</h1>
+    <div *ngIf="bookings.length; else noBooking">
+        <div *ngFor="let slot of bookings; trackBy: trackById" class="booking-card">
+        <h3>Slot ID: {{ slot.id }} ({{ slot.type }})</h3>
+        <p><strong>Vehicle:</strong> {{ slot.bookingInfo?.vehicleNo }}</p>
+        <p><strong>Start:</strong> {{ slot.bookingInfo?.startTime }}</p>
+        <p><strong>Duration:</strong> {{ getDuration(slot.bookingInfo!.startTime) }} hour(s)</p>
+        <p><strong>Amount (incl. GST):</strong> ₹{{ getBill(slot).toFixed(2) }}</p>
+        <button (click)="exit(slot)">Exit & Pay</button>
+      </div>
+    </div>
+    <ng-template #noBooking>
+      <p>No active bookings found.</p>
+    </ng-template>
+  </div>
+  
