@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { AdminService } from '../../services/admin.service';
 import { ParkingService } from '../../services/parking.service';
-import { ParkingSlot } from '../../models/parking-slot.model';
+import { PriceService } from '../../services/price.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SlotDetailsModalComponent } from '../slot-details-modal/slot-details-modal.component';
 
 @Component({
   selector: 'app-admin-dashboard',
-  standalone  : false,
+  standalone: false,
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
@@ -14,42 +17,74 @@ export class AdminDashboardComponent implements OnInit {
   carSlotCount = 0;
   bikeSlotCount = 0;
 
-  carSlots: ParkingSlot[] = [];
-  bikeSlots: ParkingSlot[] = [];
+  carSlots: any[] = [];
+  bikeSlots: any[] = [];
+  bookedSlots: any[] = [];
+  visibleSlots: any[] = [];
 
-  selectedSlot?: ParkingSlot;
-
-  constructor(private parkingService: ParkingService) {}
+  constructor(
+    private adminService: AdminService,
+    private parkingService: ParkingService,
+    private priceService: PriceService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
-    this.carRate = this.parkingService.getPrice('car');
-    this.bikeRate = this.parkingService.getPrice('bike');
+    this.loadPrices();
     this.loadSlots();
   }
-
+  
+  loadPrices(): void {
+    this.priceService.getPrice('car').subscribe(res => this.carRate = res.pricePerHour);
+    this.priceService.getPrice('bike').subscribe(res => this.bikeRate = res.pricePerHour);
+  }
+  
   loadSlots(): void {
-    const slots = this.parkingService.getSlots();
-    this.carSlots = slots.filter(s => s.type === 'car');
-    this.bikeSlots = slots.filter(s => s.type === 'bike');
-    this.carSlotCount = this.carSlots.length;
-    this.bikeSlotCount = this.bikeSlots.length;
+    this.parkingService.getCarSlots().subscribe(carRes => {
+      this.carSlots = carRes.map(slot => ({ ...slot, type: 'car' }));
+      this.carSlotCount = this.carSlots.length;
+      
+      this.parkingService.getBikeSlots().subscribe(bikeRes => {
+        this.bikeSlots = bikeRes.map(slot => ({ ...slot, type: 'bike' }));
+        this.bikeSlotCount = this.bikeSlots.length;
+        
+        this.bookedSlots = [...this.carSlots, ...this.bikeSlots].filter(slot => slot.isBooked);
+      });
+    });
   }
 
-  updateSlotCounts(): void {
-    this.parkingService.updateSlotCount('car', this.carSlotCount);
-    this.parkingService.updateSlotCount('bike', this.bikeSlotCount);
-    this.loadSlots();
+  updateCarSettings(): void {
+    this.adminService.createCarSlots(this.carSlotCount).subscribe(() => {
+      this.priceService.updatePrice('car', this.carRate).subscribe(() => {
+        alert('Car settings updated.');
+        this.loadSlots();
+      });
+    });
   }
 
-  updatePrices(): void {
-    this.parkingService.setPrice('car', this.carRate);
-    this.parkingService.setPrice('bike', this.bikeRate);
+  updateBikeSettings(): void {
+    this.adminService.createBikeSlots(this.bikeSlotCount).subscribe(() => {
+      this.priceService.updatePrice('bike', this.bikeRate).subscribe(() => {
+        alert('Bike settings updated.');
+        this.loadSlots();
+      });
+    });
   }
 
-  viewBookingDetails(slot: ParkingSlot): void {
-    if (slot.isBooked && slot.bookingInfo) {
-      this.selectedSlot = slot;
-      alert(`Slot ID: ${slot.id}\nVehicle: ${slot.bookingInfo.vehicleNo}\nFrom: ${slot.bookingInfo.startTime}`);
-    }
+  openSlotList(type: 'car' | 'bike'): void {
+    this.visibleSlots = type === 'car' ? this.carSlots : this.bikeSlots;
+  }
+
+  viewBookingDetails(slot: any, type: string): void {
+    console.log('🧪 Selected Slot', slot);
+
+    this.dialog.open(SlotDetailsModalComponent, {
+      data: {
+        ...slot,
+        type
+      },
+      width: '400px'
+    });
+    
   }
 }

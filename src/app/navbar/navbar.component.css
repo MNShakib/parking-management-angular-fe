@@ -1,39 +1,42 @@
 .navbar {
-    background: linear-gradient(to right, #34495e, #2c3e50);
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .nav-left a,
-  .nav-right a {
-    color: white;
-    margin-right: 15px;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  .nav-left a.logo {
-    font-size: 1.2rem;
-  }
-  
-  .nav-right span {
-    margin-right: 10px;
-  }
-  
-  .navbar a:hover {
-    text-decoration: underline;
-  }
-  .navbar a {
-    text-decoration: none !important;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .navbar a:hover {
-    text-decoration: none !important; /* 👈 remove underline */
-    opacity: 0.85;
-  }
-  
+  background: linear-gradient(to right, #34495e, #2c3e50);
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+}
+
+.navbar a.logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-right: 20px;
+}
+
+.navbar a:hover {
+  opacity: 0.85;
+}
+
+.navbar span {
+  font-size: 0.95rem;
+  margin-right: 8px;
+}

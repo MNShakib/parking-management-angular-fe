@@ -1,19 +1,100 @@
-.slot-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 10px 0;
-  }
-  .slot {
-    padding: 10px 14px;
-    background-color: #d5f0ff;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    min-width: 70px;
-    text-align: center;
-    cursor: pointer;
-  }
-  .slot.booked {
-    background-color: #ffcccc;
-    border-color: red;
-  }
+/* Layout Base */
+.admin-flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 30px;
+}
+
+/* Tables */
+.settings-table,
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.settings-table th,
+.settings-table td,
+.overview-table th,
+.overview-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  font-size: 14px;
+}
+
+.settings-table input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.settings-table button,
+.overview-table button {
+  background: #3498db;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.settings-table button:hover,
+.overview-table button:hover {
+  background: #2980b9;
+}
+
+/* All Slots Section */
+.view-slots-section {
+  margin-top: 40px;
+}
+
+.view-slots-section h2 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+}
+
+.view-button {
+  margin-right: 16px;
+  background-color: #8e44ad;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.view-button:hover {
+  background-color: #732d91;
+}
+
+.slot-list-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.slot-box {
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #ecf0f1;
+  cursor: pointer;
+  min-width: 100px;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.slot-box.booked {
+  background: #e74c3c;
+  color: white;
+}

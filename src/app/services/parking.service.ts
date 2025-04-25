@@ -1,84 +1,48 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ParkingSlot } from '../models/parking-slot.model';
 
 @Injectable({ providedIn: 'root' })
 export class ParkingService {
-  private carPrice = 50;
-  private bikePrice = 30;
-  private slots: ParkingSlot[] = [];
+  private baseUrl = 'http://localhost:5000/api/user';
 
-  constructor() {
-    const saved = localStorage.getItem('parking_slots');
-    if (saved) this.slots = JSON.parse(saved);
+  constructor(private http: HttpClient) {}
 
-    const car = localStorage.getItem('car_price');
-    const bike = localStorage.getItem('bike_price');
-    if (car) this.carPrice = +car;
-    if (bike) this.bikePrice = +bike;
+  // ✅ GET all slots
+  getCarSlots(): Observable<ParkingSlot[]> {
+    return this.http.get<ParkingSlot[]>(`${this.baseUrl}/car`);
   }
 
-  getSlots(): ParkingSlot[] {
-    return this.slots;
+  getBikeSlots(): Observable<ParkingSlot[]> {
+    return this.http.get<ParkingSlot[]>(`${this.baseUrl}/bike`);
   }
 
-  createSlots(type: 'car' | 'bike', count: number): void {
-    const newSlots: ParkingSlot[] = [];
-    for (let i = 0; i < count; i++) {
-      newSlots.push({
-        id: i+1,
-        type,
-        row: 1,
-        number: i + 1,
-        isBooked: false
-      });
-    }
-    this.slots = [...this.slots, ...newSlots];
-    this.save();
+  // ✅ BOOK slot (send correct vehicleNumber key)
+  bookCarSlot(slotId: string, vehicleNumber: string, bookedByName: string): Observable<any> {
+    const body = { vehicleNumber, bookedByName };
+    return this.http.put(`${this.baseUrl}/book-car-slot/${slotId}`, body);
   }
-
-  updateSlotCount(type: 'car' | 'bike', newCount: number): void {
-    this.slots = this.slots.filter(slot => slot.type !== type);
-    this.createSlots(type, newCount);
-  }
-
-  bookSlot(id: number, vehicleNo: string, type: 'car' | 'bike'): void {
-    const index = this.slots.findIndex(s => s.id === id && s.type === type);
-    if (index !== -1) {
-      this.slots[index].isBooked = true;
-      this.slots[index].bookingInfo = {
-        vehicleNo,
-        startTime: new Date().toISOString(),
-      };
-      this.save();
-    }
+  
+  bookBikeSlot(slotId: string, vehicleNumber: string, bookedByName: string): Observable<any> {
+    const body = { vehicleNumber, bookedByName };
+    return this.http.put(`${this.baseUrl}/book-bike-slot/${slotId}`, body);
   }
   
 
-  exitSlot(id: number, type: 'car' | 'bike'): void {
-    const index = this.slots.findIndex(s => s.id === id && s.type === type);
-    if (index !== -1 && this.slots[index].isBooked) {
-      this.slots[index].isBooked = false;
-      this.slots[index].bookingInfo!.endTime = new Date().toISOString();
-      this.save();
-    }
-  }
-  
-
-  setPrice(type: 'car' | 'bike', price: number): void {
-    if (type === 'car') {
-      this.carPrice = price;
-      localStorage.setItem('car_price', price.toString());
-    } else {
-      this.bikePrice = price;
-      localStorage.setItem('bike_price', price.toString());
-    }
+  // ✅ EXIT slot
+  exitCarSlot(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/exit-car-slot/${id}`, {});
   }
 
+  exitBikeSlot(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/exit-bike-slot/${id}`, {});
+  }
+
+  // 🔁 Frontend-only price support (fallback if needed)
   getPrice(type: 'car' | 'bike'): number {
-    return type === 'car' ? this.carPrice : this.bikePrice;
-  }
-
-  private save(): void {
-    localStorage.setItem('parking_slots', JSON.stringify(this.slots));
+    const car = localStorage.getItem('carRate');
+    const bike = localStorage.getItem('bikeRate');
+    return type === 'car' ? +car! || 50 : +bike! || 30;
   }
 }

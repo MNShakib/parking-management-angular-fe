@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router'; // 👈 Import Router
+import { AuthService } from '../../services/auth.service'; // Adjust path if needed
 
 @Component({
   selector: 'app-register',
@@ -11,16 +11,25 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterComponent {
   username = '';
   password = '';
+  bikeNumber = '';
+  carNumber = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {} // 👈 Inject Router
 
   register(): void {
-    const registered = this.auth.register(this.username, this.password);
-    if (registered) {
-      alert('Registration successful! Please login.');
-      this.router.navigate(['/login']);
-    } else {
-      alert('Username already taken.');
-    }
+    const payload = {
+      username: this.username,
+      password: this.password,
+      bikeNumber: this.bikeNumber || null,
+      carNumber: this.carNumber || null
+    };
+
+    this.authService.register(payload).subscribe({
+      next: () => {
+        alert('Registered successfully!');
+        this.router.navigate(['/login']); // 👈 Redirect to login after success
+      },
+      error: err => alert(err.error.message || 'Registration failed')
+    });
   }
 }

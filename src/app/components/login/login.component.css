@@ -1,8 +1,77 @@
-.container label {
-    display: block;
-    margin-bottom: 10px;
+.login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
   }
+  
+  .login-container h1 {
+    margin-bottom: 24px;
+    font-size: 28px;
+    color: #2c3e50;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #34495e;
+  }
+  
   input, select {
-    padding: 6px;
-    margin-left: 10px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    transition: border 0.2s ease-in-out;
   }
+  
+  input:focus, select:focus {
+    border-color: #3498db;
+  }
+  
+  .button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #2980b9;
+  }
+  
+  .register-link {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .register-link a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+  

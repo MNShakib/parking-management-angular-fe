@@ -1,33 +1,72 @@
-<div class="container">
-    <h1>Admin Dashboard</h1>
-  
-    <h2>Set Hourly Price</h2>
-    <label>Car Price: <input type="number" [(ngModel)]="carRate" /></label>
-    <label>Bike Price: <input type="number" [(ngModel)]="bikeRate" /></label>
-    <button class="button" (click)="updatePrices()">Save Prices</button>
-  
-    <h2>Manage Slots</h2>
-    <label>Car Slots: <input type="number" [(ngModel)]="carSlotCount" /></label>
-    <label>Bike Slots: <input type="number" [(ngModel)]="bikeSlotCount" /></label>
-    <button class="button" (click)="updateSlotCounts()">Update Slots</button>
-  
-    <h3>Car Slots</h3>
-    <div class="slot-row">
-      <div *ngFor="let slot of carSlots" 
-           class="slot" 
-           [class.booked]="slot.isBooked" 
-           (click)="viewBookingDetails(slot)">
-        {{ slot.id }}
-      </div>
-    </div>
-  
-    <h3>Bike Slots</h3>
-    <div class="slot-row">
-      <div *ngFor="let slot of bikeSlots" 
-           class="slot" 
-           [class.booked]="slot.isBooked" 
-           (click)="viewBookingDetails(slot)">
-        {{ slot.id }}
+<div class="admin-flex-container">
+
+  <!-- Slot + Price Control -->
+  <div class="admin-settings">
+    <h2>🛠️ Slot & Price Management</h2>
+    <table class="settings-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Slot Count</th>
+          <th>Price (₹/hr)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🚗 Car</td>
+          <td><input type="number" [(ngModel)]="carSlotCount" min="0" /></td>
+          <td><input type="number" [(ngModel)]="carRate" min="0" /></td>
+          <td><button (click)="updateCarSettings()">Update</button></td>
+        </tr>
+        <tr>
+          <td>🛵 Bike</td>
+          <td><input type="number" [(ngModel)]="bikeSlotCount" min="0" /></td>
+          <td><input type="number" [(ngModel)]="bikeRate" min="0" /></td>
+          <td><button (click)="updateBikeSettings()">Update</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Booked Slot Overview -->
+  <div class="admin-overview">
+    <h2>📋 Booked Slot Overview</h2>
+    <table class="overview-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Type</th>
+          <th>Vehicle No</th>
+          <th>Booked By</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let slot of bookedSlots">
+          <td>{{ slot.number }}</td>
+          <td>{{ slot.type }}</td>
+          <td>{{ slot.vehicleNumber }}</td>
+          <td>{{ slot.bookedByName || 'User'+slot.number }}</td>
+          <td>{{ slot.bookedAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- View All Slots Section -->
+  <div class="view-slots-section">
+    <h2>📦 All Parking Slots</h2>
+    <button class="view-button" (click)="openSlotList('car')">Show All Car Slots</button>
+    <button class="view-button" (click)="openSlotList('bike')">Show All Bike Slots</button>
+
+    <div class="slot-list-grid">
+      <div *ngFor="let slot of visibleSlots"
+           class="slot-box"
+           [class.booked]="slot.isBooked"
+           (click)="viewBookingDetails(slot, slot.type)">
+        {{ slot.type === 'car' ? '🚗' : '🛵' }} #{{ slot.number }}
       </div>
     </div>
   </div>
+</div>

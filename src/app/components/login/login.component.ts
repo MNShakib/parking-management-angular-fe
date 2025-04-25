@@ -16,12 +16,18 @@ export class LoginComponent {
   constructor(private auth: AuthService, private router: Router) {}
 
   login(): void {
-    const success = this.auth.login(this.username, this.password, this.role as 'admin' | 'user');
-    if (success) {
-      const route = this.role === 'admin' ? '/admin' : '/user';
-      this.router.navigate([route]);
-    } else {
-      alert('Invalid credentials');
-    }
+    this.auth.login({ username: this.username, password: this.password })
+      .subscribe({
+        next: (res: any) => {
+          this.auth.setSession(res.token);
+          const role = this.auth.getUserRole();
+          const route = role === 'admin' ? '/admin' : '/user';
+          this.router.navigate([route]);
+        },
+        error: err => {
+          alert(err.error?.message || 'Invalid credentials');
+        }
+      });
   }
+  
 }

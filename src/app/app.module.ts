@@ -15,6 +15,25 @@ import { AuthGuard } from './guards/auth/auth.guard';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { NavbarComponent } from './navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
+import { VehicleInputModalComponent } from './components/vehicle-input-modal/vehicle-input-modal.component';
+
+import { MatButtonModule } from '@angular/material/button';
+import { SlotDetailsModalComponent } from './components/slot-details-modal/slot-details-modal.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// In your module (e.g. AppModule) or standalone component imports:
+import { MatSidenavModule }   from '@angular/material/sidenav';
+import { MatToolbarModule }   from '@angular/material/toolbar';
+import { MatIconModule }      from '@angular/material/icon';
+import { MatListModule }      from '@angular/material/list';
+import { MatCardModule }      from '@angular/material/card';
+import { MatGridListModule }  from '@angular/material/grid-list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule }     from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDividerModule }   from '@angular/material/divider';
+import { MatDialogModule }    from '@angular/material/dialog';
+
 
 @NgModule({
   declarations: [
@@ -25,12 +44,28 @@ import { HomeComponent } from './components/home/home.component';
     LoginComponent,
     RegisterComponent,
     NavbarComponent,
-    HomeComponent
+    HomeComponent,
+    VehicleInputModalComponent,
+    SlotDetailsModalComponent
   ],
   imports: [
     BrowserModule,
+    MatListModule,
     AppRoutingModule,
+    MatDialogModule,
+    MatInputModule,
+    MatGridListModule,
+    MatPaginatorModule,
+    MatCardModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatToolbarModule,
     FormsModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatTooltipModule,
+    BrowserAnimationsModule,
     HttpClientModule
   ],
   providers: [
