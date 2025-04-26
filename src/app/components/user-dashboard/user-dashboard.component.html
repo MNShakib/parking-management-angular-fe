@@ -1,65 +1,71 @@
-<!-- <div class="section">
-    <h2>🚲 Bike Slots</h2>
-    <div *ngFor="let slot of paginatedBikeSlots()" class="slot-card">
-      <p><strong>Slot #:</strong> {{ slot.number }}</p>
-      <p *ngIf="slot.isBooked">
-        <strong>Booked By:</strong> {{ slot.bookingInfo?.bookedByName || 'Unknown' }}<br />
-        <strong>Vehicle:</strong> {{ slot.bookingInfo?.vehicleNo || 'N/A' }}
-      </p>
-      <button [disabled]="slot.isBooked" (click)="book(slot)">Book Bike Slot</button>
-    </div>
-  
-    <div class="pagination-buttons">
-      <button (click)="goToPreviousBikePage()" [disabled]="bikePage === 0">⬅ Previous</button>
-      <button (click)="goToNextBikePage()" [disabled]="(bikePage + 1) * bikePerPage >= bikeSlots.length">Next ➡</button>
-    </div>
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <h1>🚗 Parking Slot Management</h1>
   </div>
+  <div class="slot-sections">
+
+    <!-- 🏍️ Bike Panel -->
+    <div class="slot-panel">
+      <div class="slot-icon">🏍️</div>
+      <h2>Bike Vehicle</h2>
   
-  <div class="section">
-    <h2>🚗 Car Slots</h2>
-    <div *ngFor="let slot of paginatedCarSlots()" class="slot-card">
-      <p><strong>Slot #:</strong> {{ slot.number }}</p>
-      <p *ngIf="slot.isBooked">
-        <strong>Booked By:</strong> {{ slot.bookingInfo?.bookedByName || 'Unknown' }}<br />
-        <strong>Vehicle:</strong> {{ slot.bookingInfo?.vehicleNo || 'N/A' }}
-      </p>
-      <button [disabled]="slot.isBooked" (click)="book(slot)">Book Car Slot</button>
-    </div>
+      <label>Bike Number</label>
+      <input type="text" [(ngModel)]="bikeNumber" [readonly]="!!bikeSlot" />
   
-    <div class="pagination-buttons">
-      <button (click)="goToPreviousCarPage()" [disabled]="carPage === 0">⬅ Previous</button>
-      <button (click)="goToNextCarPage()" [disabled]="(carPage + 1) * carPerPage >= carSlots.length">Next ➡</button>
-    </div>
-  </div>
-   -->
-   <div class="dashboard-wrapper">
-    <div class="dashboard-header">
-      <h1>Parking Slot Management</h1>
-      <img src="../../assets/images/banner" alt="Parking Banner" />
-    </div>
-  
-    <div class="slot-sections">
-      <!-- Bike Panel -->
-      <div class="slot-panel">
-        <div class="slot-icon">🏍️</div>
-        <h2>Bike</h2>
-        <label>Vehicle Number</label>
-        <input type="text" [value]="'AB1234'" readonly />
-        <button class="primary">Park Bike</button>
-        <button class="secondary">Edit</button>
-        <p class="availability">1 slot available</p>
+      <!-- First Step: Only Update if no bike slot -->
+      <div *ngIf="!bikeSlot">
+        <button class="primary" (click)="updateVehicleNumbers()">Update Bike Number</button>
+        <button class="primary" (click)="parkBike()">Park Bike</button>
       </div>
   
-      <!-- Car Panel -->
-      <div class="slot-panel">
-        <div class="slot-icon">🚗</div>
-        <h2>Car</h2>
-        <label>Vehicle Number</label>
-        <input type="text" [value]="'XYZ5678'" readonly />
-        <button class="primary">Park Car</button>
-        <button class="secondary">Edit</button>
-        <p class="availability">2 slots available</p>
+      <!-- After parked, show Pay & Exit -->
+      <div *ngIf="bikeSlot">
+        <button class="secondary" (click)="openExitModal(bikeSlot, 'bike')">Pay & Exit</button>
       </div>
     </div>
+  
+    <!-- 🚗 Car Panel -->
+    <div class="slot-panel">
+      <div class="slot-icon">🚗</div>
+      <h2>Car Vehicle</h2>
+  
+      <label>Car Number</label>
+      <input type="text" [(ngModel)]="carNumber" [readonly]="!!carSlot" />
+  
+      <!-- First Step: Only Update if no car slot -->
+      <div *ngIf="!carSlot">
+        <button class="primary" (click)="updateVehicleNumbers()">Update Car Number</button>
+        <button class="primary" (click)="parkCar()">Park Car</button>
+      </div>
+  
+      <!-- After parked, show Pay & Exit -->
+      <div *ngIf="carSlot">
+        <button class="secondary" (click)="openExitModal(carSlot, 'car')">Pay & Exit</button>
+      </div>
+    </div>
+  
   </div>
   
+
+  <!-- Exit Modal -->
+  <!-- Exit Confirmation Modal -->
+<div class="modal" *ngIf="showExitModal">
+  <div class="modal-content">
+    <!-- ❌ Close Button -->
+    <button class="close-btn" (click)="cancelExit()">✖</button>
+
+    <h2>Pay & Exit</h2>
+    <p><strong>Slot #:</strong> {{ selectedSlot?.number }}</p>
+    <p><strong>Vehicle:</strong> {{ selectedSlot?.vehicleNumber || 'N/A' }}</p>
+    <p><strong>Booked At:</strong> {{ selectedSlot?.bookedAt | date:'short' }}</p>
+    <p><strong>Duration:</strong> {{ getDuration(selectedSlot?.bookedAt) }} hour(s)</p>
+    <p><strong>Total (incl. GST):</strong> ₹{{ getBill(selectedSlot!) }}</p>
+
+    <div class="modal-buttons">
+      <button class="primary" (click)="confirmExit()">Confirm Pay & Exit</button>
+      <button class="secondary" (click)="cancelExit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+</div>

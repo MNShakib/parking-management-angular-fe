@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>📋 {{ data.type | titlecase }} Slot #{{ data.number }}</h2>
 
 <div mat-dialog-content>
+  <p><strong>Booked By:</strong> {{ data.bookedByName || 'N/A' }}</p>
   <p><strong>Vehicle Number:</strong> {{ data.vehicleNumber || 'N/A' }}</p>
   <p><strong>Booked At:</strong> {{ data.bookedAt ? (data.bookedAt | date: 'medium') : 'N/A' }}</p>
 </div>

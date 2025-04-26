@@ -1,121 +1,190 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { ParkingService } from '../../services/parking.service';
 import { ParkingSlot } from '../../models/parking-slot.model';
-import { VehicleInputModalComponent } from '../vehicle-input-modal/vehicle-input-modal.component';
 
 @Component({
   selector: 'app-user-dashboard',
-  standalone:false,
+  standalone: false,
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css']
 })
 export class UserDashboardComponent implements OnInit {
   currentUser = localStorage.getItem('username') || 'User';
-  sidebarCollapsed = false;
 
-  carSlots: ParkingSlot[] = [];
-  bikeSlots: ParkingSlot[] = [];
+  bikeNumber: string = '';
+  carNumber: string = '';
 
-  carPage = 0;
-  bikePage = 0;
-  carPerPage = 5;
-  bikePerPage = 5;
+  bikeSlot: ParkingSlot | null = null;
+  carSlot: ParkingSlot | null = null;
+
+  showExitModal = false;
+  selectedSlot: ParkingSlot | null = null;
+  selectedType: 'bike' | 'car' | null = null;
 
   constructor(
-    private dialog: MatDialog,
-    private parkingService: ParkingService
+    private parkingService: ParkingService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadSlots();
+    this.loadUserVehicleNumbers();
+    this.checkExistingBookings();
   }
 
-  loadSlots(): void {
-    this.parkingService.getCarSlots().subscribe(car => {
-      this.carSlots = car.map(s => ({ ...s, type: 'car' }));
-    });
-
-    this.parkingService.getBikeSlots().subscribe(bike => {
-      this.bikeSlots = bike.map(s => ({ ...s, type: 'bike' }));
+  loadUserVehicleNumbers(): void {
+    this.parkingService.getCurrentUser().subscribe({
+      next: (user) => {
+        this.bikeNumber = user.bikeNumber || '';
+        this.carNumber = user.carNumber || '';
+      },
+      error: (err) => {
+        console.error('Failed to fetch user vehicle numbers', err);
+      }
     });
   }
 
-  toggleSidebar(): void {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
-  book(slot: ParkingSlot): void {
-    if (slot.isBooked) return;
-  
-    console.log("local storage============>" + localStorage.getItem('username'));
-  
-    const ref = this.dialog.open(VehicleInputModalComponent, {
-      width: '280px'
+  checkExistingBookings(): void {
+    this.parkingService.getCarSlots().subscribe(carSlots => {
+      const myCarSlot = carSlots.find(slot => slot.bookedByName === this.currentUser);
+      if (myCarSlot) {
+        this.carSlot = myCarSlot;
+      }
     });
+
+    this.parkingService.getBikeSlots().subscribe(bikeSlots => {
+      const myBikeSlot = bikeSlots.find(slot => slot.bookedByName === this.currentUser);
+      if (myBikeSlot) {
+        this.bikeSlot = myBikeSlot;
+      }
+    });
+  }
+
+  updateVehicleNumbers(): void {
+    const payload = {
+      bikeNumber: this.bikeNumber,
+      carNumber: this.carNumber
+    };
+
+    this.parkingService.updateVehicleNumbers(payload).subscribe({
+      next: () => {
+        alert('✅ Vehicle numbers updated successfully!');
+      },
+      error: (err) => {
+        console.error('Failed to update vehicle numbers', err);
+        alert('❌ Failed to update vehicle numbers.');
+      }
+    });
+  }
+
+  parkBike(): void {
+    if (!this.bikeNumber || this.bikeNumber.trim() === '') {
+      alert('⚠️ Please enter your bike number before parking.');
+      return;
+    }
   
-    ref.afterClosed().subscribe(vehicleNumber => {
-      if (!vehicleNumber) return;
+    if (this.carSlot) {
+      alert('❌ You already have a Car slot booked. Exit it first!');
+      return;
+    }
   
-      const bookedByName = this.currentUser;
+    this.parkingService.getBikeSlots().subscribe(slots => {
+      const availableSlot = slots.find(slot => !slot.isBooked);
+      if (availableSlot) {
+        this.parkingService.bookBikeSlot(availableSlot._id, this.bikeNumber, this.currentUser).subscribe({
+          next: () => {
+            alert('✅ Bike parked successfully!');
+            this.checkExistingBookings();
+          },
+          error: (err) => {
+            alert('❌ Failed to park bike: ' + (err?.error?.message || 'Unknown error'));
+          }
+        });
+      } else {
+        alert('❌ No available bike slots.');
+      }
+    });
+  }
   
-      const request$ = slot.type === 'car'
-        ? this.parkingService.bookCarSlot(slot._id, vehicleNumber, bookedByName)
-        : this.parkingService.bookBikeSlot(slot._id, vehicleNumber, bookedByName);
+
+  parkCar(): void {
+    if (!this.carNumber || this.carNumber.trim() === '') {
+      alert('⚠️ Please enter your car number before parking.');
+      return;
+    }
   
-      request$.subscribe({
-        next: () => this.loadSlots(),
-        error: err => {
-          const message = err?.error?.message || 'Failed to book slot';
-          alert(`❌ Booking Failed: ${message}`);
+    if (this.bikeSlot) {
+      alert('❌ You already have a Bike slot booked. Exit it first!');
+      return;
+    }
+  
+    this.parkingService.getCarSlots().subscribe(slots => {
+      const availableSlot = slots.find(slot => !slot.isBooked);
+      if (availableSlot) {
+        this.parkingService.bookCarSlot(availableSlot._id, this.carNumber, this.currentUser).subscribe({
+          next: () => {
+            alert('✅ Car parked successfully!');
+            this.checkExistingBookings();
+          },
+          error: (err) => {
+            alert('❌ Failed to park car: ' + (err?.error?.message || 'Unknown error'));
+          }
+        });
+      } else {
+        alert('❌ No available car slots.');
+      }
+    });
+  }
+  
+
+  openExitModal(slot: ParkingSlot, type: 'bike' | 'car') {
+    this.selectedSlot = slot;
+    this.selectedType = type;
+    this.showExitModal = true;
+  }
+
+  getDuration(bookedAt: string | Date | null | undefined): number {
+    if (!bookedAt) return 0;
+    const startTime = new Date(bookedAt).getTime();
+    const now = new Date().getTime();
+    const hours = (now - startTime) / (1000 * 60 * 60);
+    return Math.max(1, Math.ceil(hours));
+  }
+
+  getBill(slot: ParkingSlot): number {
+    const rate = this.parkingService.getPrice(slot.type!);
+    const hours = this.getDuration(slot.bookedAt || undefined);
+    const base = rate * hours;
+    return Math.round(base + base * 0.18); // includes GST
+  }
+
+  confirmExit(): void {
+    if (!this.selectedSlot || !this.selectedType) return;
+
+    const request$ = this.selectedType === 'bike'
+      ? this.parkingService.exitBikeSlot(this.selectedSlot._id)
+      : this.parkingService.exitCarSlot(this.selectedSlot._id);
+
+    request$.subscribe({
+      next: () => {
+        alert(`✅ Payment Successful!`);
+        this.showExitModal = false;
+        if (this.selectedType === 'bike') {
+          this.bikeSlot = null;
+        } else {
+          this.carSlot = null;
         }
-      });
+        // this.router.navigate(['/booking']);
+      },
+      error: (err) => {
+        alert('❌ Failed to exit: ' + (err?.error?.message || 'Unknown error'));
+      }
     });
   }
-  
-  
 
-  onCarPageChange(event: PageEvent): void {
-    this.carPage = event.pageIndex;
-    this.carPerPage = event.pageSize;
-  }
-
-  onBikePageChange(event: PageEvent): void {
-    this.bikePage = event.pageIndex;
-    this.bikePerPage = event.pageSize;
-  }
-
-  goToNextBikePage(): void {
-    if ((this.bikePage + 1) * this.bikePerPage < this.bikeSlots.length) {
-      this.bikePage++;
-    }
-  }
-
-  goToPreviousBikePage(): void {
-    if (this.bikePage > 0) {
-      this.bikePage--;
-    }
-  }
-
-  goToNextCarPage(): void {
-    if ((this.carPage + 1) * this.carPerPage < this.carSlots.length) {
-      this.carPage++;
-    }
-  }
-
-  goToPreviousCarPage(): void {
-    if (this.carPage > 0) {
-      this.carPage--;
-    }
-  }
-
-  paginatedCarSlots(): ParkingSlot[] {
-    const start = this.carPage * this.carPerPage;
-    return this.carSlots.slice(start, start + this.carPerPage);
-  }
-
-  paginatedBikeSlots(): ParkingSlot[] {
-    const start = this.bikePage * this.bikePerPage;
-    return this.bikeSlots.slice(start, start + this.bikePerPage);
+  cancelExit(): void {
+    this.showExitModal = false;
+    this.selectedSlot = null;
+    this.selectedType = null;
   }
 }

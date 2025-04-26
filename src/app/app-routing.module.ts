@@ -17,7 +17,6 @@ const routes: Routes = [
   { path: 'booking', component: BookingComponent, canActivate: [AuthGuard] },
   // { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard], data: { role: 'admin' } },
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
